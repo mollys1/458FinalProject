@@ -1,11 +1,15 @@
 package com.schedulingsimulator.schedulingsimulator;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.DialogFragment;
+import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity implements PeriodicTaskFragment.OnPeriodicTaskChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,5 +37,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onPeriodicTaskChange(Uri uri)
+    {
+
+    }
+
+
+    public void addPeriodicTask(View view)
+    {
+        Toast.makeText(this, "Add periodic task", Toast.LENGTH_SHORT).show();
+        DialogFragment periodicFragment = new PeriodicTaskFragment();
+        periodicFragment.show(getFragmentManager(), "newPeriodicTaskDialog");
+    }
+
+    public void addAperiodicTask(View view)
+    {
+        Toast.makeText(this, "Add aperiodic task", Toast.LENGTH_SHORT).show();
     }
 }

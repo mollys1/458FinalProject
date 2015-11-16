@@ -3,9 +3,57 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/periodic_tasks_text"
+        android:text="@string/periodic_tasks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Base.TextAppearance.AppCompat.Headline"/>
+
+    <ImageButton
+        android:id="@+id/periodic_tasks_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/periodic_tasks_text"
+        android:layout_toRightOf="@id/periodic_tasks_text"
+        android:src="@android:drawable/ic_input_add"
+        android:background="@android:color/transparent"
+        android:onClick="addPeriodicTask"/>
+
+    <ListView
+        android:id="@+id/periodic_tasks_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/periodic_tasks_button"
+        ></ListView>
+
+    <TextView
+        android:id="@+id/aperiodic_tasks_text"
+        android:text="@string/aperiodic_tasks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/periodic_tasks_list"
+        style="@style/Base.TextAppearance.AppCompat.Headline"/>
+
+    <ImageButton
+        android:id="@+id/aperiodic_tasks_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/aperiodic_tasks_text"
+        android:layout_toRightOf="@id/aperiodic_tasks_text"
+        android:layout_below="@id/periodic_tasks_list"
+        android:src="@android:drawable/ic_input_add"
+        android:background="@android:color/transparent"
+        android:onClick="addAperiodicTask"/>
+
+    <ListView
+        android:id="@+id/aperiodic_tasks_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/aperiodic_tasks_button"
+        ></ListView>
 
 </RelativeLayout>
