@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
 /**
@@ -109,6 +110,11 @@ public class PeriodicTaskFragment extends DialogFragment {
     public interface OnPeriodicTaskChangeListener {
         // TODO: Update argument type and name
         public void onPeriodicTaskChange(Uri uri);
+    }
+
+    public void save(View view)
+    {
+        Toast.makeText(getActivity(), "Save periodic task", Toast.LENGTH_SHORT).show();
     }
 
 }
