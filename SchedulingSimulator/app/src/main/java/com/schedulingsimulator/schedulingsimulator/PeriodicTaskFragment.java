@@ -1,13 +1,18 @@
 package com.schedulingsimulator.schedulingsimulator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
@@ -29,7 +34,7 @@ public class PeriodicTaskFragment extends DialogFragment {
     // TODO: Rename and change types of parameters
     private int periodParam;
     private int computationTimeParam;
-    private boolean isNewParam;
+    private boolean isNewParam = true;
 
     private OnPeriodicTaskChangeListener mListener;
 
@@ -57,27 +62,44 @@ public class PeriodicTaskFragment extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        EditText periodEditText = (EditText) getActivity().findViewById(R.id.periodic_period);
+        EditText compTimeEditText = (EditText) getActivity().findViewById(R.id.periodic_computation_time);
+        if (getArguments() != null)
+        {
             periodParam = getArguments().getInt(ARG_PARAM1);
+            periodEditText.setText(periodParam);
             computationTimeParam = getArguments().getInt(ARG_PARAM2);
+            compTimeEditText.setText(computationTimeParam);
             isNewParam = getArguments().getBoolean(ARG_PARAM3);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_periodic_task, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onPeriodicTaskChange(uri);
-        }
+        View v =  inflater.inflate(R.layout.fragment_periodic_task, container, false);
+        final EditText periodEditText = (EditText) v.findViewById(R.id.periodic_period);
+        final EditText compTimeEditText = (EditText) v.findViewById(R.id.periodic_computation_time);
+        Button saveButton = (Button) v.findViewById(R.id.save_button);
+        Button cancelButton = (Button) v.findViewById(R.id.cancel_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onPeriodicTaskChange(Integer.parseInt(compTimeEditText.getText().toString()),Integer.parseInt(periodEditText.getText().toString()), isNewParam);
+                dismiss();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+        return v;
     }
 
     @Override
@@ -109,12 +131,7 @@ public class PeriodicTaskFragment extends DialogFragment {
      */
     public interface OnPeriodicTaskChangeListener {
         // TODO: Update argument type and name
-        public void onPeriodicTaskChange(Uri uri);
-    }
-
-    public void save(View view)
-    {
-        Toast.makeText(getActivity(), "Save periodic task", Toast.LENGTH_SHORT).show();
+        void onPeriodicTaskChange(int computationTime, int period, boolean isNew);
     }
 
 }

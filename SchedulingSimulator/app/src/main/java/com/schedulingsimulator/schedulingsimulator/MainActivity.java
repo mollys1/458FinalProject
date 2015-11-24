@@ -1,20 +1,32 @@
 package com.schedulingsimulator.schedulingsimulator;
 
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class MainActivity extends FragmentActivity implements PeriodicTaskFragment.OnPeriodicTaskChangeListener {
+
+    DialogFragment periodicFragment, aperiodicFragment;
+
+    ArrayList<PeriodicTask> periodicTasks = new ArrayList<PeriodicTask>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ListView periodicList = (ListView) findViewById(R.id.periodic_tasks_list);
+        final ArrayAdapter<PeriodicTask> adapter = new ArrayAdapter<PeriodicTask>(this, android.R.layout.simple_list_item_1, periodicTasks);
+        periodicList.setAdapter(adapter);
     }
 
     @Override
@@ -39,16 +51,17 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         return super.onOptionsItemSelected(item);
     }
 
-    public void onPeriodicTaskChange(Uri uri)
+    public void onPeriodicTaskChange(int computationTime, int period, boolean isNew)
     {
-
+        Toast.makeText(this, "Comp time: " + computationTime + " period: " + period + " isNew: " + isNew, Toast.LENGTH_SHORT).show();
+        if (isNew) periodicTasks.add(new PeriodicTask(computationTime, period));
     }
 
 
     public void addPeriodicTask(View view)
     {
         Toast.makeText(this, "Add periodic task", Toast.LENGTH_SHORT).show();
-        DialogFragment periodicFragment = new PeriodicTaskFragment();
+        periodicFragment = new PeriodicTaskFragment();
         periodicFragment.show(getFragmentManager(), "newPeriodicTaskDialog");
     }
 
@@ -56,4 +69,5 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     {
         Toast.makeText(this, "Add aperiodic task", Toast.LENGTH_SHORT).show();
     }
+
 }

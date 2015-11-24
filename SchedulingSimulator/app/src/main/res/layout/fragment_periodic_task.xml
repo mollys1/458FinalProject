@@ -6,19 +6,41 @@
 
     <!-- TODO: Update blank fragment layout -->
     <EditText
+        android:id="@+id/periodic_computation_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Computation Time"/>
+        android:layout_gravity="center"
+        android:hint="Computation Time"
+        android:inputType="number"/>
 
     <EditText
+        android:id="@+id/periodic_period"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Period"/>
+        android:layout_gravity="center"
+        android:hint="Period"
+        android:inputType="number"/>
 
-    <Button
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:onClick="save"/>
+        android:layout_gravity="bottom">
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_cancel" />
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_ok"
+            android:layout_toRightOf="@id/cancel_button"
+            />
+
+    </RelativeLayout>
+
 
 </LinearLayout>
