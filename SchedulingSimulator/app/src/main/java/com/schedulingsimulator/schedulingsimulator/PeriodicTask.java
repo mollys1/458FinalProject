@@ -6,6 +6,7 @@ package com.schedulingsimulator.schedulingsimulator;
 public class PeriodicTask {
     private int computationTime;
     private int period;
+    private int listPosition;
 
     public PeriodicTask(int compTime, int period) {
         this.computationTime = compTime;

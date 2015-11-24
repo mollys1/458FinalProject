@@ -1,110 +1,110 @@
 package com.schedulingsimulator.schedulingsimulator;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnPeriodicTaskChangeListener} interface
+ * {@link OnAperiodicTaskChangeListener} interface
  * to handle interaction events.
- * Use the {@link PeriodicTaskFragment#newInstance} factory method to
+ * Use the {@link AperiodicTaskFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PeriodicTaskFragment extends DialogFragment {
+public class AperiodicTaskFragment extends DialogFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    public static final String ARG_PARAM1 = "period";
+    public static final String ARG_PARAM1 = "readyTime";
     public static final String ARG_PARAM2 = "computationTime";
-    public static final String ARG_PARAM3 = "isNew";
-    public static final String ARG_PARAM4 = "listPosition";
+    public static final String ARG_PARAM3 = "deadline";
+    public static final String ARG_PARAM4 = "isNew";
+    public static final String ARG_PARAM5 = "listPosition";
 
     // TODO: Rename and change types of parameters
-    private int periodParam = 0;
-    private int computationTimeParam = 0;
+    private int readyTimeParam;
+    private int computationTimeParam;
+    private int deadlineParam;
     private boolean isNewParam = true;
     private int listPositionParam = -1;
 
-    private OnPeriodicTaskChangeListener mListener;
-
+    private OnAperiodicTaskChangeListener mListener;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param period the period of this task
-     * @param computationTime computation time of this task
-     * @return A new instance of fragment PeriodicTaskFragment.
+     * @param readyTime Parameter 1.
+     * @param computationTime Parameter 2.
+     * @return A new instance of fragment AperiodicTaskFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PeriodicTaskFragment newInstance(int period, int computationTime, boolean isNew, int listPosition) {
-        PeriodicTaskFragment fragment = new PeriodicTaskFragment();
+    public static AperiodicTaskFragment newInstance(int readyTime, int computationTime, int deadline, boolean isNew, int listPosition) {
+        AperiodicTaskFragment fragment = new AperiodicTaskFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, period);
+        args.putInt(ARG_PARAM1, readyTime);
         args.putInt(ARG_PARAM2, computationTime);
-        args.putBoolean(ARG_PARAM3, isNew);
-        args.putInt(ARG_PARAM4, listPosition);
+        args.putInt(ARG_PARAM3, deadline);
+        args.putBoolean(ARG_PARAM4, isNew);
+        args.putInt(ARG_PARAM5, listPosition);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public PeriodicTaskFragment() {
+    public AperiodicTaskFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-        {
-            Toast.makeText(getActivity(), "OnCreate Args", Toast.LENGTH_SHORT);
-            periodParam = getArguments().getInt(ARG_PARAM1);
+        if (getArguments() != null) {
+            readyTimeParam = getArguments().getInt(ARG_PARAM1);
             computationTimeParam = getArguments().getInt(ARG_PARAM2);
-            isNewParam = getArguments().getBoolean(ARG_PARAM3);
-            listPositionParam = getArguments().getInt(ARG_PARAM4);
+            deadlineParam = getArguments().getInt(ARG_PARAM3);
+            isNewParam = getArguments().getBoolean(ARG_PARAM4);
+            listPositionParam = getArguments().getInt(ARG_PARAM5);
         }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.fragment_periodic_task, container, false);
-        final EditText period = (EditText) v.findViewById(R.id.periodic_period);
-        final EditText computationTime = (EditText) v.findViewById(R.id.periodic_computation_time);
-        if (getArguments() != null) {
-            period.setText(Integer.toString(periodParam));
-            computationTime.setText(Integer.toString(computationTimeParam));
+        View v = inflater.inflate(R.layout.fragment_aperiodic_task, container, false);
+        final EditText readyTimeEditText = (EditText) v.findViewById(R.id.aperiodic_ready_time);
+        final EditText computationTimeEditText = (EditText) v.findViewById(R.id.aperiodic_computation_time);
+        final EditText deadlineEditText = (EditText) v.findViewById(R.id.aperiodic_deadline);
+        if (getArguments() != null)
+        {
+            readyTimeEditText.setText(Integer.toString(readyTimeParam));
+            computationTimeEditText.setText(Integer.toString(computationTimeParam));
+            deadlineEditText.setText(Integer.toString(deadlineParam));
         }
+
         Button saveButton = (Button) v.findViewById(R.id.save_button);
         Button cancelButton = (Button) v.findViewById(R.id.cancel_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onPeriodicTaskChange(Integer.parseInt(computationTime.getText().toString()),Integer.parseInt(period.getText().toString()), isNewParam, listPositionParam);
+                mListener.onAperiodicTaskChange(Integer.parseInt(readyTimeEditText.getText().toString()), Integer.parseInt(computationTimeEditText.getText().toString()), Integer.parseInt(deadlineEditText.getText().toString()), isNewParam, listPositionParam);
                 dismiss();
             }
         });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        cancelButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
+
         return v;
     }
 
@@ -112,7 +112,7 @@ public class PeriodicTaskFragment extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnPeriodicTaskChangeListener) activity;
+            mListener = (OnAperiodicTaskChangeListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnAperiodicTaskChangeListener");
@@ -135,9 +135,9 @@ public class PeriodicTaskFragment extends DialogFragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnPeriodicTaskChangeListener {
+    public interface OnAperiodicTaskChangeListener {
         // TODO: Update argument type and name
-        void onPeriodicTaskChange(int computationTime, int period, boolean isNew, int listPosition);
+        void onAperiodicTaskChange(int readyTime, int computationTime, int deadline, boolean isNew, int listPosition);
     }
 
 }

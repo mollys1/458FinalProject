@@ -8,25 +8,71 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends FragmentActivity implements PeriodicTaskFragment.OnPeriodicTaskChangeListener {
+public class MainActivity extends FragmentActivity implements PeriodicTaskFragment.OnPeriodicTaskChangeListener, AperiodicTaskFragment.OnAperiodicTaskChangeListener {
 
     DialogFragment periodicFragment, aperiodicFragment;
 
     ArrayList<PeriodicTask> periodicTasks = new ArrayList<PeriodicTask>();
+    ArrayList<AperiodicTask> aperiodicTasks = new ArrayList<>();
+
+    ArrayAdapter<PeriodicTask> periodicAdapter;
+    ArrayAdapter<AperiodicTask> aperiodicAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //periodic task list
         ListView periodicList = (ListView) findViewById(R.id.periodic_tasks_list);
-        final ArrayAdapter<PeriodicTask> adapter = new ArrayAdapter<PeriodicTask>(this, android.R.layout.simple_list_item_1, periodicTasks);
-        periodicList.setAdapter(adapter);
+        periodicAdapter = new ArrayAdapter<PeriodicTask>(this, android.R.layout.simple_list_item_1, periodicTasks);
+        periodicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                 @Override
+                                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                     PeriodicTask selected = (PeriodicTask) parent.getItemAtPosition(position);
+                                                     //Toast.makeText(getApplicationContext(), "Periodic item clicked: " + selected.toString(), Toast.LENGTH_SHORT).show();
+                                                     periodicFragment = new PeriodicTaskFragment();
+                                                     Bundle args = new Bundle();
+                                                     args.putInt(PeriodicTaskFragment.ARG_PARAM1, selected.getPeriod());
+                                                     args.putInt(PeriodicTaskFragment.ARG_PARAM2, selected.getComputationTime());
+                                                     //task is not new
+                                                     args.putBoolean(PeriodicTaskFragment.ARG_PARAM3, false);
+                                                     args.putInt(PeriodicTaskFragment.ARG_PARAM4, position);
+                                                     periodicFragment.setArguments(args);
+                                                     periodicFragment.show(getFragmentManager(), "newPeriodicTaskDialog");
+                                                 }
+                                             }
+        );
+        periodicList.setAdapter(periodicAdapter);
+
+        //aperiodic task list
+        ListView aperiodicList = (ListView) findViewById(R.id.aperiodic_tasks_list);
+        aperiodicAdapter = new ArrayAdapter<AperiodicTask>(this, android.R.layout.simple_list_item_1, aperiodicTasks);
+        aperiodicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                 @Override
+                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                     AperiodicTask selected = (AperiodicTask) parent.getItemAtPosition(position);
+                     //Toast.makeText(getApplicationContext(), "Aperiodic item clicked: " + selected.toString(), Toast.LENGTH_SHORT).show();
+                     aperiodicFragment = new AperiodicTaskFragment();
+                     Bundle args = new Bundle();
+                     args.putInt(AperiodicTaskFragment.ARG_PARAM1, selected.getReadyTime());
+                     args.putInt(AperiodicTaskFragment.ARG_PARAM2, selected.getComputationTime());
+                     args.putInt(AperiodicTaskFragment.ARG_PARAM3, selected.getDeadline());
+                     //is not new
+                     args.putBoolean(AperiodicTaskFragment.ARG_PARAM4, false);
+                     aperiodicFragment.setArguments(args);
+                     aperiodicFragment.show(getFragmentManager(), "newAperiodicTaskDialog");
+                 }
+             }
+        );
+        aperiodicList.setAdapter(aperiodicAdapter);
     }
 
     @Override
@@ -51,10 +97,26 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         return super.onOptionsItemSelected(item);
     }
 
-    public void onPeriodicTaskChange(int computationTime, int period, boolean isNew)
+    public void onPeriodicTaskChange(int computationTime, int period, boolean isNew, int listPosition)
     {
-        Toast.makeText(this, "Comp time: " + computationTime + " period: " + period + " isNew: " + isNew, Toast.LENGTH_SHORT).show();
         if (isNew) periodicTasks.add(new PeriodicTask(computationTime, period));
+        else {
+            Toast.makeText(this, "Comp time: " + computationTime + " period: " + period + " isNew: " + isNew, Toast.LENGTH_SHORT).show();
+            periodicTasks.remove(listPosition);
+            periodicTasks.add(listPosition, new PeriodicTask(computationTime, period));
+            periodicAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void onAperiodicTaskChange(int readyTime, int computationTime, int deadline, boolean isNew, int listPosition)
+    {
+        if (isNew) aperiodicTasks.add(new AperiodicTask(readyTime, computationTime, deadline));
+        else {
+            Toast.makeText(this, "Ready time: " + readyTime + " Comp time: " + computationTime + " deadline: " + deadline + " isNew: " + isNew, Toast.LENGTH_SHORT).show();
+            aperiodicTasks.remove(listPosition);
+            aperiodicTasks.add(listPosition, new AperiodicTask(readyTime, computationTime, deadline));
+            aperiodicAdapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -68,6 +130,18 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     public void addAperiodicTask(View view)
     {
         Toast.makeText(this, "Add aperiodic task", Toast.LENGTH_SHORT).show();
+        aperiodicFragment = new AperiodicTaskFragment();
+        aperiodicFragment.show(getFragmentManager(), "newAperiodicTaskDialog");
+    }
+
+    public void editPeriodicTask(View view)
+    {
+        Toast.makeText(this, "Edit periodic task", Toast.LENGTH_SHORT).show();
+    }
+
+    public void editAperiodicTask(View view)
+    {
+        Toast.makeText(this, "Edit aperiodic task", Toast.LENGTH_SHORT).show();
     }
 
 }

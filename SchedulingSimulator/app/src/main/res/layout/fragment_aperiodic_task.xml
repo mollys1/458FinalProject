@@ -1,0 +1,52 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.schedulingsimulator.schedulingsimulator.AperiodicTaskFragment">
+
+        <EditText
+            android:id="@+id/aperiodic_ready_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Ready Time"
+            android:inputType="number"
+            android:layout_gravity="center"/>
+
+
+        <EditText
+            android:id="@+id/aperiodic_computation_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Computation Time"
+            android:inputType="number"
+            android:layout_gravity="center"/>
+
+        <EditText
+            android:id="@+id/aperiodic_deadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Deadline"
+            android:inputType="number"
+            android:layout_gravity="center"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_cancel" />
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_ok"
+            android:layout_toRightOf="@id/cancel_button"
+            />
+
+    </RelativeLayout>
+
+</LinearLayout>
