@@ -20,15 +20,27 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
 
     DialogFragment periodicFragment, aperiodicFragment;
 
-    ArrayList<PeriodicTask> periodicTasks = new ArrayList<PeriodicTask>();
-    ArrayList<AperiodicTask> aperiodicTasks = new ArrayList<>();
+    ArrayList<PeriodicTask> periodicTasks;
+    ArrayList<AperiodicTask> aperiodicTasks;
 
     ArrayAdapter<PeriodicTask> periodicAdapter;
     ArrayAdapter<AperiodicTask> aperiodicAdapter;
 
+    public static final String PERIODIC_ARRAY_KEY = "periodicArray";
+    public static final String APERIODIC_ARRAY_KEY = "aperiodicArray";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState == null || !savedInstanceState.containsKey(PERIODIC_ARRAY_KEY)) periodicTasks = new ArrayList<>();
+        else periodicTasks = savedInstanceState.getParcelableArrayList(PERIODIC_ARRAY_KEY);
+        if (savedInstanceState == null || !savedInstanceState.containsKey(APERIODIC_ARRAY_KEY)) aperiodicTasks = new ArrayList<>();
+        else aperiodicTasks = savedInstanceState.getParcelableArrayList(APERIODIC_ARRAY_KEY);
+
+        if (periodicTasks != null && aperiodicTasks != null)
+        {
+            Toast.makeText(this, "OnCreate Periodic length: " + periodicTasks.size() + " Aperiodic length: " + aperiodicTasks.size(), Toast.LENGTH_SHORT).show();
+        }
         setContentView(R.layout.activity_main);
         //periodic task list
         ListView periodicList = (ListView) findViewById(R.id.periodic_tasks_list);
@@ -67,6 +79,7 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                      args.putInt(AperiodicTaskFragment.ARG_PARAM3, selected.getDeadline());
                      //is not new
                      args.putBoolean(AperiodicTaskFragment.ARG_PARAM4, false);
+                     args.putInt(AperiodicTaskFragment.ARG_PARAM5, position);
                      aperiodicFragment.setArguments(args);
                      aperiodicFragment.show(getFragmentManager(), "newAperiodicTaskDialog");
                  }
@@ -80,6 +93,13 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    protected  void onResume()
+    {
+        super.onResume();
+        Toast.makeText(this, "OnResume Periodic length: " + periodicTasks.size() + " Aperiodic length: " + aperiodicTasks.size(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -101,7 +121,7 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     {
         if (isNew) periodicTasks.add(new PeriodicTask(computationTime, period));
         else {
-            Toast.makeText(this, "Comp time: " + computationTime + " period: " + period + " isNew: " + isNew, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             periodicTasks.remove(listPosition);
             periodicTasks.add(listPosition, new PeriodicTask(computationTime, period));
             periodicAdapter.notifyDataSetChanged();
@@ -112,11 +132,19 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     {
         if (isNew) aperiodicTasks.add(new AperiodicTask(readyTime, computationTime, deadline));
         else {
-            Toast.makeText(this, "Ready time: " + readyTime + " Comp time: " + computationTime + " deadline: " + deadline + " isNew: " + isNew, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             aperiodicTasks.remove(listPosition);
             aperiodicTasks.add(listPosition, new AperiodicTask(readyTime, computationTime, deadline));
             aperiodicAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedState)
+    {
+        savedState.putParcelableArrayList(PERIODIC_ARRAY_KEY, periodicTasks);
+        savedState.putParcelableArrayList(APERIODIC_ARRAY_KEY, aperiodicTasks);
+        super.onSaveInstanceState(savedState);
     }
 
 
