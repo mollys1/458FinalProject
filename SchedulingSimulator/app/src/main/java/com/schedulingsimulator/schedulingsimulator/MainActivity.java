@@ -1,7 +1,9 @@
 package com.schedulingsimulator.schedulingsimulator;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -43,49 +45,104 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         }
         setContentView(R.layout.activity_main);
         //periodic task list
-        ListView periodicList = (ListView) findViewById(R.id.periodic_tasks_list);
+        final ListView periodicList = (ListView) findViewById(R.id.periodic_tasks_list);
         periodicAdapter = new ArrayAdapter<PeriodicTask>(this, android.R.layout.simple_list_item_1, periodicTasks);
         periodicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                                 @Override
-                                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                     PeriodicTask selected = (PeriodicTask) parent.getItemAtPosition(position);
-                                                     //Toast.makeText(getApplicationContext(), "Periodic item clicked: " + selected.toString(), Toast.LENGTH_SHORT).show();
-                                                     periodicFragment = new PeriodicTaskFragment();
-                                                     Bundle args = new Bundle();
-                                                     args.putInt(PeriodicTaskFragment.ARG_PARAM1, selected.getPeriod());
-                                                     args.putInt(PeriodicTaskFragment.ARG_PARAM2, selected.getComputationTime());
-                                                     //task is not new
-                                                     args.putBoolean(PeriodicTaskFragment.ARG_PARAM3, false);
-                                                     args.putInt(PeriodicTaskFragment.ARG_PARAM4, position);
-                                                     periodicFragment.setArguments(args);
-                                                     periodicFragment.show(getFragmentManager(), "newPeriodicTaskDialog");
-                                                 }
-                                             }
+                                                @Override
+                                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                    PeriodicTask selected = (PeriodicTask) parent.getItemAtPosition(position);
+                                                    //Toast.makeText(getApplicationContext(), "Periodic item clicked: " + selected.toString(), Toast.LENGTH_SHORT).show();
+                                                    periodicFragment = new PeriodicTaskFragment();
+                                                    Bundle args = new Bundle();
+                                                    args.putInt(PeriodicTaskFragment.ARG_PARAM1, selected.getPeriod());
+                                                    args.putInt(PeriodicTaskFragment.ARG_PARAM2, selected.getComputationTime());
+                                                    //task is not new
+                                                    args.putBoolean(PeriodicTaskFragment.ARG_PARAM3, false);
+                                                    args.putInt(PeriodicTaskFragment.ARG_PARAM4, position);
+                                                    periodicFragment.setArguments(args);
+                                                    periodicFragment.show(getFragmentManager(), "newPeriodicTaskDialog");
+                                                }
+                                            }
         );
+        //long click to delete
+        periodicList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                //create an alert dialog to confirm delete
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage(R.string.confirm_delete_message)
+                        .setTitle(R.string.confirm_delete_title)
+                        .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //delete the task, remove it from the list, update list view
+                                periodicTasks.remove(position);
+                                periodicAdapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //don't delete, close the dialog
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+                return true;
+            }
+        });
         periodicList.setAdapter(periodicAdapter);
 
         //aperiodic task list
         ListView aperiodicList = (ListView) findViewById(R.id.aperiodic_tasks_list);
         aperiodicAdapter = new ArrayAdapter<AperiodicTask>(this, android.R.layout.simple_list_item_1, aperiodicTasks);
         aperiodicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                 @Override
-                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                     AperiodicTask selected = (AperiodicTask) parent.getItemAtPosition(position);
-                     //Toast.makeText(getApplicationContext(), "Aperiodic item clicked: " + selected.toString(), Toast.LENGTH_SHORT).show();
-                     aperiodicFragment = new AperiodicTaskFragment();
-                     Bundle args = new Bundle();
-                     args.putInt(AperiodicTaskFragment.ARG_PARAM1, selected.getReadyTime());
-                     args.putInt(AperiodicTaskFragment.ARG_PARAM2, selected.getComputationTime());
-                     args.putInt(AperiodicTaskFragment.ARG_PARAM3, selected.getDeadline());
-                     //is not new
-                     args.putBoolean(AperiodicTaskFragment.ARG_PARAM4, false);
-                     args.putInt(AperiodicTaskFragment.ARG_PARAM5, position);
-                     aperiodicFragment.setArguments(args);
-                     aperiodicFragment.show(getFragmentManager(), "newAperiodicTaskDialog");
-                 }
-             }
+                                                 @Override
+                                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                     AperiodicTask selected = (AperiodicTask) parent.getItemAtPosition(position);
+                                                     //Toast.makeText(getApplicationContext(), "Aperiodic item clicked: " + selected.toString(), Toast.LENGTH_SHORT).show();
+                                                     aperiodicFragment = new AperiodicTaskFragment();
+                                                     Bundle args = new Bundle();
+                                                     args.putInt(AperiodicTaskFragment.ARG_PARAM1, selected.getReadyTime());
+                                                     args.putInt(AperiodicTaskFragment.ARG_PARAM2, selected.getComputationTime());
+                                                     args.putInt(AperiodicTaskFragment.ARG_PARAM3, selected.getDeadline());
+                                                     //is not new
+                                                     args.putBoolean(AperiodicTaskFragment.ARG_PARAM4, false);
+                                                     args.putInt(AperiodicTaskFragment.ARG_PARAM5, position);
+                                                     aperiodicFragment.setArguments(args);
+                                                     aperiodicFragment.show(getFragmentManager(), "newAperiodicTaskDialog");
+                                                 }
+                                             }
         );
-        aperiodicList.setAdapter(aperiodicAdapter);
+        aperiodicList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                                                     @Override
+                                                     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                                                         //create an alert dialog to confirm delete
+                                                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                                         builder.setMessage(R.string.confirm_delete_message)
+                                                                 .setTitle(R.string.confirm_delete_title)
+                                                                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                                                                     @Override
+                                                                     public void onClick(DialogInterface dialog, int which) {
+                                                                         //delete the task, remove it from the list, update list view
+                                                                         aperiodicTasks.remove(position);
+                                                                         aperiodicAdapter.notifyDataSetChanged();
+                                                                         dialog.dismiss();
+                                                                     }
+                                                                 })
+                                                                 .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                                                                     @Override
+                                                                     public void onClick(DialogInterface dialog, int which) {
+                                                                         //don't delete, close the dialog
+                                                                         dialog.dismiss();
+                                                                     }
+                                                                 })
+                                                                 .show();
+                                                         return true;
+                                                     }
+                                                 });
+                aperiodicList.setAdapter(aperiodicAdapter);
     }
 
     @Override
