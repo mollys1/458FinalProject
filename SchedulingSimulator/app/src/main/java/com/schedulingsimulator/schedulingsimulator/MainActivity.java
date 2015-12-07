@@ -219,14 +219,22 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         aperiodicFragment.show(getFragmentManager(), "newAperiodicTaskDialog");
     }
 
-    public void editPeriodicTask(View view)
+    public void createSchedule(View view)
     {
-        Toast.makeText(this, "Edit periodic task", Toast.LENGTH_SHORT).show();
+        //check RMS schedulability
+        Toast.makeText(this, "Schedulability Test: " + schedulabilityTest(), Toast.LENGTH_SHORT).show();
     }
 
-    public void editAperiodicTask(View view)
+    private boolean schedulabilityTest()
     {
-        Toast.makeText(this, "Edit aperiodic task", Toast.LENGTH_SHORT).show();
+        double summation = 0;
+        for (int i = 0; i < periodicTasks.size(); i++)
+        {
+            PeriodicTask current = periodicTasks.get(i);
+            summation += ((double) current.getComputationTime() / (double) current.getPeriod());
+        }
+        double rightSide = periodicTasks.size() * (Math.pow(2, 1.0/periodicTasks.size()) - 1);
+        return summation <= rightSide;
     }
 
 }

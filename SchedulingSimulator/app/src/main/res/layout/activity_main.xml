@@ -77,11 +77,19 @@
             android:layout_below="@id/aperiodic_tasks_button"
             ></ListView>
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Long touch items to delete"
         android:layout_gravity="center"
         android:textStyle="italic" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_button"
+            android:onClick="createSchedule"
+            android:layout_gravity="center"/>
 
     </LinearLayout>
