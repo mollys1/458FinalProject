@@ -2,6 +2,7 @@
   <dictionary name="Molly">
     <words>
       <w>schedulability</w>
+      <w>schedulable</w>
     </words>
   </dictionary>
 </component>

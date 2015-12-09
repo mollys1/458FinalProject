@@ -137,8 +137,6 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                                                                      @Override
                                                                      public void onClick(DialogInterface dialog, int which) {
                                                                          //don't delete, close the dialog=][
-
-
                                                                          dialog.dismiss();
                                                                      }
                                                                  })
@@ -227,10 +225,26 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     {
         //check RMS schedulability
         boolean schedulable = schedulabilityTest();
+        //if schedulability test fails, do exact analysis
+        if (!schedulable) schedulable = exactAnalysis();
+        //if exact analysis fails, show error that task set was not schedulable
         if (!schedulable)
         {
-            //try exact analysis
-            schedulable = exactAnalysis();
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage(R.string.not_schedulable_message)
+                    .setTitle(R.string.not_schedulable_title)
+                    .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+        }
+        //if schedulable, launch new activity to show schedules
+        else
+        {
+            //put schedule activity here
         }
         if (TEST) Toast.makeText(this, "Schedulable: " + schedulable, Toast.LENGTH_SHORT).show();
     }
