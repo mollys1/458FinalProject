@@ -31,6 +31,8 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     public static final String PERIODIC_ARRAY_KEY = "periodicArray";
     public static final String APERIODIC_ARRAY_KEY = "aperiodicArray";
 
+    public static final boolean TEST = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +43,7 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
 
         if (periodicTasks != null && aperiodicTasks != null)
         {
-            Toast.makeText(this, "OnCreate Periodic length: " + periodicTasks.size() + " Aperiodic length: " + aperiodicTasks.size(), Toast.LENGTH_SHORT).show();
+            if (TEST) Toast.makeText(this, "OnCreate Periodic length: " + periodicTasks.size() + " Aperiodic length: " + aperiodicTasks.size(), Toast.LENGTH_SHORT).show();
         }
         setContentView(R.layout.activity_main);
         //periodic task list
@@ -51,7 +53,7 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                                                 @Override
                                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                                     PeriodicTask selected = (PeriodicTask) parent.getItemAtPosition(position);
-                                                    //Toast.makeText(getApplicationContext(), "Periodic item clicked: " + selected.toString(), Toast.LENGTH_SHORT).show();
+                                                    //if (TEST) Toast.makeText(getApplicationContext(), "Periodic item clicked: " + selected.toString(), if (TEST) Toast.LENGTH_SHORT).show();
                                                     periodicFragment = new PeriodicTaskFragment();
                                                     Bundle args = new Bundle();
                                                     args.putInt(PeriodicTaskFragment.ARG_PARAM1, selected.getPeriod());
@@ -101,7 +103,7 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                                                  @Override
                                                  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                                      AperiodicTask selected = (AperiodicTask) parent.getItemAtPosition(position);
-                                                     //Toast.makeText(getApplicationContext(), "Aperiodic item clicked: " + selected.toString(), Toast.LENGTH_SHORT).show();
+                                                     //if (TEST) Toast.makeText(getApplicationContext(), "Aperiodic item clicked: " + selected.toString(), if (TEST) Toast.LENGTH_SHORT).show();
                                                      aperiodicFragment = new AperiodicTaskFragment();
                                                      Bundle args = new Bundle();
                                                      args.putInt(AperiodicTaskFragment.ARG_PARAM1, selected.getReadyTime());
@@ -134,7 +136,9 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                                                                  .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
                                                                      @Override
                                                                      public void onClick(DialogInterface dialog, int which) {
-                                                                         //don't delete, close the dialog
+                                                                         //don't delete, close the dialog=][
+
+
                                                                          dialog.dismiss();
                                                                      }
                                                                  })
@@ -156,7 +160,7 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     protected  void onResume()
     {
         super.onResume();
-        Toast.makeText(this, "OnResume Periodic length: " + periodicTasks.size() + " Aperiodic length: " + aperiodicTasks.size(), Toast.LENGTH_SHORT).show();
+        if (TEST) Toast.makeText(this, "OnResume Periodic length: " + periodicTasks.size() + " Aperiodic length: " + aperiodicTasks.size(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -178,7 +182,7 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     {
         if (isNew) periodicTasks.add(new PeriodicTask(computationTime, period));
         else {
-            Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
+            if (TEST) Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             periodicTasks.remove(listPosition);
             periodicTasks.add(listPosition, new PeriodicTask(computationTime, period));
             periodicAdapter.notifyDataSetChanged();
@@ -189,7 +193,7 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     {
         if (isNew) aperiodicTasks.add(new AperiodicTask(readyTime, computationTime, deadline));
         else {
-            Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
+            if (TEST) Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             aperiodicTasks.remove(listPosition);
             aperiodicTasks.add(listPosition, new AperiodicTask(readyTime, computationTime, deadline));
             aperiodicAdapter.notifyDataSetChanged();
@@ -207,14 +211,14 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
 
     public void addPeriodicTask(View view)
     {
-        Toast.makeText(this, "Add periodic task", Toast.LENGTH_SHORT).show();
+        if (TEST) Toast.makeText(this, "Add periodic task", Toast.LENGTH_SHORT).show();
         periodicFragment = new PeriodicTaskFragment();
         periodicFragment.show(getFragmentManager(), "newPeriodicTaskDialog");
     }
 
     public void addAperiodicTask(View view)
     {
-        Toast.makeText(this, "Add aperiodic task", Toast.LENGTH_SHORT).show();
+        if (TEST) Toast.makeText(this, "Add aperiodic task", Toast.LENGTH_SHORT).show();
         aperiodicFragment = new AperiodicTaskFragment();
         aperiodicFragment.show(getFragmentManager(), "newAperiodicTaskDialog");
     }
@@ -222,7 +226,13 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
     public void createSchedule(View view)
     {
         //check RMS schedulability
-        Toast.makeText(this, "Schedulability Test: " + schedulabilityTest(), Toast.LENGTH_SHORT).show();
+        boolean schedulable = schedulabilityTest();
+        if (!schedulable)
+        {
+            //try exact analysis
+            schedulable = exactAnalysis();
+        }
+        if (TEST) Toast.makeText(this, "Schedulable: " + schedulable, Toast.LENGTH_SHORT).show();
     }
 
     private boolean schedulabilityTest()
@@ -235,6 +245,62 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         }
         double rightSide = periodicTasks.size() * (Math.pow(2, 1.0/periodicTasks.size()) - 1);
         return summation <= rightSide;
+    }
+
+    private boolean exactAnalysis()
+    {
+        ArrayList<PeriodicTask> orderedByPeriod = orderPeriodicByPeriod();
+        if (TEST) Toast.makeText(this, "Ordered By Period: " + orderedByPeriod.toString(), Toast.LENGTH_SHORT).show();
+        for (int i = 0; i < orderedByPeriod.size(); i++)
+        {
+            boolean taskSchedulable = completionTimeTest(i, orderedByPeriod);
+            if (TEST) Toast.makeText(this, "Schedulability of task: " + orderedByPeriod.get(i).toString() + " " + taskSchedulable, Toast.LENGTH_SHORT).show();
+            if (!taskSchedulable) return false;
+        }
+        return true;
+    }
+
+    //perform completion time test on given task, true if task is schedulable
+    private boolean completionTimeTest(int index, ArrayList<PeriodicTask> sortedTasks)
+    {
+        PeriodicTask toCheck = sortedTasks.get(index);
+        int completionTime = 0, previousCompletionTime = 1;
+        while (previousCompletionTime <= toCheck.getPeriod())
+        {
+            for (int i = index; i < sortedTasks.size(); i++)
+            {
+                completionTime += Math.ceil((double) previousCompletionTime / sortedTasks.get(i).getPeriod()) * sortedTasks.get(i).getComputationTime();
+            }
+            if (previousCompletionTime == completionTime) return true;
+            previousCompletionTime = completionTime;
+            completionTime = 0;
+        }
+        return false;
+    }
+
+    private ArrayList<PeriodicTask> orderPeriodicByPeriod()
+    {
+        ArrayList<PeriodicTask> orderedByPeriod = new ArrayList<>(periodicTasks.size());
+        orderedByPeriod.add(periodicTasks.get(0));
+        for (int i = 1; i < periodicTasks.size(); i++)
+        {
+            PeriodicTask toInsert = periodicTasks.get(i);
+            boolean inserted = false;
+            for (int j = 0; j < orderedByPeriod.size() && !inserted; j++)
+            {
+                if (toInsert.getPeriod() >= orderedByPeriod.get(j).getPeriod())
+                {
+                    orderedByPeriod.add(j, toInsert);
+                    inserted = true;
+                }
+                else if (j == orderedByPeriod.size() - 1)
+                {
+                    orderedByPeriod.add(toInsert);
+                    inserted = true;
+                }
+            }
+        }
+        return orderedByPeriod;
     }
 
 }
