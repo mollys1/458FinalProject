@@ -15,5 +15,9 @@
     <string name="schedule_button">Create Schedule</string>
     <string name="not_schedulable_message">This periodic task set is not schedulable! Edit or remove tasks to make a schedulable task set.</string>
     <string name="not_schedulable_title">Not Schedulable</string>
+    <string name="title_activity_schedules">SchedulesActivity</string>
+
+    <string name="schedule_params_title">Schedule Parameters</string>
+    <string name="schedule_params_message">Enter the following schedule parameters:</string>
 
 </resources>

@@ -7,12 +7,14 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -241,10 +243,24 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                     })
                     .show();
         }
-        //if schedulable, launch new activity to show schedules
+        //if schedulable, ask for schedule length, create schedule arrays, pass to schedules activity
         else
         {
-            //put schedule activity here
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage(R.string.schedule_params_message)
+                    .setTitle(R.string.schedule_params_title)
+                    .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            EditText schedLength = (EditText) ((AlertDialog) dialog).findViewById(R.id.scheduleLength);
+                            EditText computationTime = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverComputationTime);
+                            EditText period = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverPeriod);
+                            createPollingServerSchedule(Integer.parseInt(schedLength.getText().toString()), Integer.parseInt(computationTime.getText().toString()), Integer.parseInt(period.getText().toString()));
+                            dialog.dismiss();
+                        }
+                    })
+                    .setView(R.layout.dialog_schedule_params)
+                    .show();
         }
         if (TEST) Toast.makeText(this, "Schedulable: " + schedulable, Toast.LENGTH_SHORT).show();
     }
@@ -259,6 +275,17 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         }
         double rightSide = periodicTasks.size() * (Math.pow(2, 1.0/periodicTasks.size()) - 1);
         return summation <= rightSide;
+    }
+
+    private int[][] createPollingServerSchedule(int scheduleLength, int serverComputationTime, int serverPeriod)
+    {
+        if (TEST) Toast.makeText(this, "Schedule Length: " + scheduleLength + " Server comp time: " + serverComputationTime + " Server Period: " + serverPeriod, Toast.LENGTH_SHORT).show();
+        int numTasks = periodicTasks.size() + 1; //num periodic tasks + 1 for server task
+        int[][] pollingSchedule = new int[numTasks][scheduleLength];
+
+
+
+        return pollingSchedule;
     }
 
     private boolean exactAnalysis()

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/scheduleLength"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="Schedule Length"
+        android:layout_gravity="center"/>
+
+
+    <EditText
+        android:id="@+id/serverComputationTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="Server Computation Time"
+        android:layout_gravity="center"/>
+
+
+    <EditText
+        android:id="@+id/serverPeriod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="Server Period"
+        android:layout_gravity="center"/>
+
+
+</LinearLayout>
