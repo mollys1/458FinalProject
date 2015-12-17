@@ -10,14 +10,16 @@ public class Task
     private int deadline;
     private int period;
     private int computedTime;
+    private String id;
 
-    public Task()
+    public Task(String id)
     {
         this.readyTime = 0;
         this.computationTime = 0;
         this.deadline = 0;
         this.period = 0;
         this.computedTime = 0;
+        this.id = id;
     }
 
     public int getReadyTime() { return readyTime; }
@@ -37,6 +39,11 @@ public class Task
     public int getComputedTime()
     {
         return computedTime;
+    }
+
+    public String getId()
+    {
+        return id;
     }
 
 

@@ -39,6 +39,11 @@ public class PollingServerScheduler implements Scheduler
             curTask = findNextTask(curTime);
             schedule.add(curTime, curTask);
             curTask.setComputedTime(curTask.getComputedTime() + 1);
+            // Update the ready time
+            if(curTask.getComputedTime() == curTask.getComputationTime())
+            {
+                curTask.setReadyTime(curTask.getReadyTime() + curTask.getPeriod());
+            }
         }
     }
 
@@ -72,10 +77,15 @@ public class PollingServerScheduler implements Scheduler
         {
             curTask = perIter.next();
             // Only consider it if the ready time is less than the current time
-            if(curTask.getReadyTime() <= curTime)
+            if(curTask.getReadyTime() <= curTime && curTask.getComputedTime() < curTask.getComputationTime())
             {
 
             }
+        }
+
+        if(Ps < minPeriod)
+        {
+            // Find an aperiodic task to run if available
         }
 
         return null;
