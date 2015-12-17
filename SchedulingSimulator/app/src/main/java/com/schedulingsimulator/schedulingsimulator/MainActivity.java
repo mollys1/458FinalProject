@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -252,11 +253,17 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                     .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            EditText schedLength = (EditText) ((AlertDialog) dialog).findViewById(R.id.scheduleLength);
-                            EditText computationTime = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverComputationTime);
-                            EditText period = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverPeriod);
-                            createPollingServerSchedule(Integer.parseInt(schedLength.getText().toString()), Integer.parseInt(computationTime.getText().toString()), Integer.parseInt(period.getText().toString()));
+                            EditText schedLengthEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.scheduleLength);
+                            EditText computationTimeEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverComputationTime);
+                            EditText periodEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverPeriod);
                             dialog.dismiss();
+                            //start schedules activity
+                            Intent intent = new Intent(MainActivity.this, SchedulesActivity.class);
+                            int scheduleLength = Integer.parseInt(schedLengthEditText.getText().toString());
+                            int computationTime = Integer.parseInt(computationTimeEditText.getText().toString());
+                            int period = Integer.parseInt(periodEditText.getText().toString());
+                            intent.putExtra(SchedulesActivity.SCHEDULE_LENGTH_KEY, scheduleLength);
+                            startActivity(intent);
                         }
                     })
                     .setView(R.layout.dialog_schedule_params)

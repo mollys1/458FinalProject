@@ -18,7 +18,8 @@
         </activity>
         <activity
             android:name=".SchedulesActivity"
-            android:label="@string/title_activity_schedules" >
+            android:label="@string/title_activity_schedules"
+            android:screenOrientation="sensorLandscape">
         </activity>
     </application>
 

@@ -1,16 +1,34 @@
 package com.schedulingsimulator.schedulingsimulator;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 public class SchedulesActivity extends AppCompatActivity {
+
+    public static final String SCHEDULE_LENGTH_KEY = "scheduleLength";
+    public static final String SERVER_COMPUTATION_TIME_KEY = "serverComputationTime";
+    public static final String SERVER_PERIOD_KEY = "serverPeriod";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        int scheduleLength = intent.getIntExtra(SCHEDULE_LENGTH_KEY, -1);
         setContentView(R.layout.activity_schedules);
+        TableRow tr = (TableRow) findViewById(R.id.tableRow);
+        for (int i = 0; i < scheduleLength; i++)
+        {
+            TextView columnTextView = new TextView(this);
+            columnTextView.setText("Col " + i);
+            tr.addView(columnTextView);
+        }
     }
 
     @Override
