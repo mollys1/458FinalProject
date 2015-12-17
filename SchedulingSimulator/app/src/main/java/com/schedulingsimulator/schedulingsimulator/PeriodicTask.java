@@ -7,16 +7,13 @@ import android.os.Parcelable;
  * Created by Molly on 11/23/2015.
  */
 public class PeriodicTask extends Task implements Parcelable {
-
-    private int readyTime;
-    private int deadline;
-    private int computationTime;
-    private int period;
+    public boolean aperiodicServer;
 
     public PeriodicTask(String id, int compTime, int period) {
         super(id);
         this.computationTime = compTime;
         this.period = period;
+        aperiodicServer = false;
     }
 
     public PeriodicTask(Parcel in)

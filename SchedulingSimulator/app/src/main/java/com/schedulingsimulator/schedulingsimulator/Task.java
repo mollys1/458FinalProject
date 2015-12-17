@@ -5,12 +5,12 @@ package com.schedulingsimulator.schedulingsimulator;
  */
 public class Task
 {
-    private int readyTime;
-    private int computationTime;
-    private int deadline;
-    private int period;
-    private int computedTime;
-    private String id;
+    protected int readyTime;
+    protected int computationTime;
+    protected int deadline;
+    protected int period;
+    protected int computedTime;
+    protected String id;
 
     public Task(String id)
     {

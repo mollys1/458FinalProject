@@ -11,16 +11,16 @@ public class PollingServerScheduler implements Scheduler
     private ArrayList<Task> schedule;
     private ArrayList<PeriodicTask> periodicTasks;
     private ArrayList<AperiodicTask> aperiodicTasks;
-    private int Cs;
-    private int Ps;
+    private PeriodicTask AperServer;
 
     public PollingServerScheduler (int serverComputationTime, int serverPeriod, ArrayList<PeriodicTask> ptask, ArrayList<AperiodicTask> atask)
     {
         schedule = new ArrayList<Task>();
         periodicTasks = ptask;
         aperiodicTasks = atask;
-        Cs = serverComputationTime;
-        Ps = serverPeriod;
+        AperServer = new PeriodicTask("S", serverComputationTime, serverPeriod);
+        AperServer.aperiodicServer = true;
+        periodicTasks.add(AperServer);
     }
 
     public ArrayList<Task> GetSchedule()
@@ -40,11 +40,21 @@ public class PollingServerScheduler implements Scheduler
             schedule.add(curTime, curTask);
             if(curTask != null)
             {
-                curTask.setComputedTime(curTask.getComputedTime() + 1);
-                // Update the ready time
-                if (curTask.getComputedTime() == curTask.getComputationTime()) {
-                    curTask.setReadyTime(curTask.getReadyTime() + curTask.getPeriod());
-                    curTask.setComputedTime(0);
+                if(curTask.getClass() == PeriodicTask.class) {
+                    curTask.setComputedTime(curTask.getComputedTime() + 1);
+                    // Update the ready time
+                    if (curTask.getComputedTime() == curTask.getComputationTime()) {
+                        curTask.setReadyTime(curTask.getReadyTime() + curTask.getPeriod());
+                        curTask.setComputedTime(0);
+                    }
+                }else{
+                    curTask.setComputedTime(curTask.getComputedTime() + 1);
+                    AperServer.setComputedTime(AperServer.getComputedTime() + 1);
+                    // Update the ready time
+                    if (curTask.getComputedTime() == curTask.getComputationTime() || AperServer.getComputedTime() == AperServer.getComputationTime()) {
+                        AperServer.setReadyTime(AperServer.getReadyTime() + AperServer.getPeriod());
+                        AperServer.setComputedTime(0);
+                    }
                 }
             }
         }
@@ -61,10 +71,17 @@ public class PollingServerScheduler implements Scheduler
             curTask = perIter.next();
             LCM *= curTask.getPeriod();
         }
-        LCM *= Ps;
 
-        // TODO Add in part for aperiodic tasks
-
+        // Aperiodic Task time
+        Iterator<AperiodicTask> aperIter = aperiodicTasks.iterator();
+        while(aperIter.hasNext())
+        {
+            curTask = aperIter.next();
+            if(curTask.getReadyTime() + curTask.getComputationTime() > LCM)
+            {
+                LCM = curTask.getReadyTime() + curTask.getComputationTime();
+            }
+        }
 
         return LCM;
     }
@@ -73,22 +90,46 @@ public class PollingServerScheduler implements Scheduler
     {
         // Find next task
         int minPeriod = Integer.MAX_VALUE;
-        Task highestPriorityTask = null;
+        int minNonAperPeriod = Integer.MAX_VALUE;
+        PeriodicTask highestPriorityTask = null;
+        PeriodicTask highestNonAperPriorityTask= null;
         Iterator<PeriodicTask> perIter = periodicTasks.iterator();
-        Task curTask = null;
+        PeriodicTask curTask = null;
         while(perIter.hasNext())
         {
             curTask = perIter.next();
             // Only consider it if the ready time is less than the current time
             if(curTask.getReadyTime() <= curTime && curTask.getComputedTime() < curTask.getComputationTime() && curTask.getPeriod() < minPeriod)
             {
+                minPeriod = curTask.getPeriod();
                 highestPriorityTask = curTask;
+            }
+            // Only consider it if the ready time is less than the current time
+            if(curTask.getReadyTime() <= curTime && curTask.getComputedTime() < curTask.getComputationTime() && curTask.getPeriod() < minNonAperPeriod && curTask.aperiodicServer == false)
+            {
+                minNonAperPeriod = curTask.getPeriod();
+                highestNonAperPriorityTask = curTask;
             }
         }
 
-        if(Ps < minPeriod)
+        if(highestPriorityTask != null && highestPriorityTask.aperiodicServer)
         {
             // TODO Find an aperiodic task to run if available
+            ArrayList<AperiodicTask> readyTimeOrdered = orderAperiodicByReadyTime();
+            Iterator<AperiodicTask> iter = readyTimeOrdered.iterator();
+            AperiodicTask curATask = null;
+            while(iter.hasNext())
+            {
+                curATask = iter.next();
+                if(curATask.getComputedTime() != curATask.getComputationTime() && curATask.getReadyTime() < curTime)
+                {
+                    return curATask;
+                }
+            }
+
+            // Aperiodic server gives up its time
+            highestPriorityTask.setReadyTime(highestPriorityTask.getReadyTime() + highestPriorityTask.getPeriod());
+            return highestNonAperPriorityTask;
         }
 
         return highestPriorityTask;
@@ -96,28 +137,100 @@ public class PollingServerScheduler implements Scheduler
 
     public boolean SchedulabilityTest()
     {
-        // Add up the ci/pi for periodic tasks
-        Iterator<PeriodicTask> perIter = periodicTasks.iterator();
-        Task curtask;
-        float sum = 0;
-        int numTasks = 0;
-        while(perIter.hasNext())
+        boolean schedulable = schedulabilityTest();
+        if(schedulable) return true;
+        return exactAnalysis();
+    }
+
+    private boolean schedulabilityTest()
+    {
+        double summation = 0;
+        for (int i = 0; i < periodicTasks.size(); i++)
         {
-            numTasks++;
-            curtask = perIter.next();
-            sum += (float) curtask.getComputationTime()/(float) curtask.getPeriod();
+            PeriodicTask current = periodicTasks.get(i);
+            summation += ((double) current.getComputationTime() / (double) current.getPeriod());
         }
 
-        // Add in the periodic server
-        sum += (float) Cs/(float)Ps;
+        double rightSide = periodicTasks.size() * (Math.pow(2, 1.0/periodicTasks.size()) - 1);
+        return summation <= rightSide;
+    }
 
-        // See if the aperiodic tasks are schedulable
-        boolean schedulable = sum < (numTasks + 1)*(2^(1/(numTasks+1)) - 1);
-        if(!schedulable)
+    private boolean exactAnalysis()
+    {
+        ArrayList<PeriodicTask> orderedByPeriod = orderPeriodicByPeriod();
+        for (int i = 0; i < orderedByPeriod.size(); i++)
         {
-            return false;
-        }else{
-            return true; // TODO add in to see if the aperiodic tasks are able to be scheduled
+            boolean taskSchedulable = completionTimeTest(i, orderedByPeriod);
+            if (!taskSchedulable) return false;
         }
+        return true;
+    }
+
+    //perform completion time test on given task, true if task is schedulable
+    private boolean completionTimeTest(int index, ArrayList<PeriodicTask> sortedTasks)
+    {
+        PeriodicTask toCheck = sortedTasks.get(index);
+        int completionTime = 0, previousCompletionTime = 1;
+        while (previousCompletionTime <= toCheck.getPeriod())
+        {
+            for (int i = index; i < sortedTasks.size(); i++)
+            {
+                completionTime += Math.ceil((double) previousCompletionTime / sortedTasks.get(i).getPeriod()) * sortedTasks.get(i).getComputationTime();
+            }
+            if (previousCompletionTime == completionTime) return true;
+            previousCompletionTime = completionTime;
+            completionTime = 0;
+        }
+        return false;
+    }
+
+    private ArrayList<PeriodicTask> orderPeriodicByPeriod()
+    {
+        ArrayList<PeriodicTask> orderedByPeriod = new ArrayList<>(periodicTasks.size());
+        orderedByPeriod.add(periodicTasks.get(0));
+        for (int i = 1; i < periodicTasks.size(); i++)
+        {
+            PeriodicTask toInsert = periodicTasks.get(i);
+            boolean inserted = false;
+            for (int j = 0; j < orderedByPeriod.size() && !inserted; j++)
+            {
+                if (toInsert.getPeriod() >= orderedByPeriod.get(j).getPeriod())
+                {
+                    orderedByPeriod.add(j, toInsert);
+                    inserted = true;
+                }
+                else if (j == orderedByPeriod.size() - 1)
+                {
+                    orderedByPeriod.add(toInsert);
+                    inserted = true;
+                }
+            }
+        }
+        return orderedByPeriod;
+    }
+
+    private ArrayList<AperiodicTask> orderAperiodicByReadyTime()
+    {
+        ArrayList<AperiodicTask> orderedByReadyTime = new ArrayList<>(aperiodicTasks.size());
+        orderedByReadyTime.add(aperiodicTasks.get(0));
+        for (int i = 1; i < aperiodicTasks.size(); i++)
+        {
+            AperiodicTask toInsert = aperiodicTasks.get(i);
+            boolean inserted = false;
+            for (int j = 0; j < orderedByReadyTime.size() && !inserted; j++)
+            {
+                if (toInsert.getReadyTime() >= orderedByReadyTime.get(j).getReadyTime())
+                {
+                    orderedByReadyTime.add(j, toInsert);
+                    inserted = true;
+                }
+                else if (j == orderedByReadyTime.size() - 1)
+                {
+                    orderedByReadyTime.add(toInsert);
+                    inserted = true;
+                }
+            }
+        }
+        return orderedByReadyTime;
     }
 }
