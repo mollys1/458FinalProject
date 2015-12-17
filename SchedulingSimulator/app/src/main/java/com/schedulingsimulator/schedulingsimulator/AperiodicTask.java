@@ -9,10 +9,6 @@ import android.os.Parcelable;
  */
 public class AperiodicTask extends Task implements Parcelable {
 
-    private int readyTime;
-    private int computationTime;
-    private int deadline;
-    private int period;
 
     public AperiodicTask(String id, int readyTime, int compTime, int deadline)
     {

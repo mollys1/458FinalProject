@@ -10,11 +10,7 @@ import java.util.Random;
  * Created by Molly on 11/23/2015.
  */
 public class PeriodicTask extends Task implements Parcelable {
-
-    private int readyTime;
-    private int deadline;
-    private int computationTime;
-    private int period;
+    public boolean aperiodicServer;
 
     public PeriodicTask(String id, int compTime, int period, int red, int green, int blue) {
         super(id, Color.rgb(red, green, blue));
@@ -27,7 +23,11 @@ public class PeriodicTask extends Task implements Parcelable {
         super(id);
         this.computationTime = compTime;
         this.period = period;
+<<<<<<< HEAD
 
+=======
+        aperiodicServer = false;
+>>>>>>> origin/master
     }
 
     public PeriodicTask(Parcel in)
