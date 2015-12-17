@@ -13,9 +13,9 @@ public class AperiodicTask extends Task implements Parcelable {
     private int deadline;
     private int period;
 
-    public AperiodicTask(int readyTime, int compTime, int deadline)
+    public AperiodicTask(String id, int readyTime, int compTime, int deadline)
     {
-        super();
+        super(id);
         this.readyTime = readyTime;
         this.computationTime = compTime;
         this.deadline = deadline;

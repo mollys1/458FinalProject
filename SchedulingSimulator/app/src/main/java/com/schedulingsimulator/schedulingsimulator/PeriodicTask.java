@@ -13,8 +13,8 @@ public class PeriodicTask extends Task implements Parcelable {
     private int computationTime;
     private int period;
 
-    public PeriodicTask(int compTime, int period) {
-        super();
+    public PeriodicTask(String id, int compTime, int period) {
+        super(id);
         this.computationTime = compTime;
         this.period = period;
     }

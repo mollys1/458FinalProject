@@ -38,11 +38,14 @@ public class PollingServerScheduler implements Scheduler
         {
             curTask = findNextTask(curTime);
             schedule.add(curTime, curTask);
-            curTask.setComputedTime(curTask.getComputedTime() + 1);
-            // Update the ready time
-            if(curTask.getComputedTime() == curTask.getComputationTime())
+            if(curTask != null)
             {
-                curTask.setReadyTime(curTask.getReadyTime() + curTask.getPeriod());
+                curTask.setComputedTime(curTask.getComputedTime() + 1);
+                // Update the ready time
+                if (curTask.getComputedTime() == curTask.getComputationTime()) {
+                    curTask.setReadyTime(curTask.getReadyTime() + curTask.getPeriod());
+                    curTask.setComputedTime(0);
+                }
             }
         }
     }
@@ -52,11 +55,11 @@ public class PollingServerScheduler implements Scheduler
         // Find the least common multiple
         int LCM = 1;
         Iterator<PeriodicTask> perIter = periodicTasks.iterator();
-        Task curtask;
+        Task curTask;
         while(perIter.hasNext())
         {
-            curtask = perIter.next();
-            LCM *= curtask.getPeriod();
+            curTask = perIter.next();
+            LCM *= curTask.getPeriod();
         }
         LCM *= Ps;
 
@@ -77,18 +80,18 @@ public class PollingServerScheduler implements Scheduler
         {
             curTask = perIter.next();
             // Only consider it if the ready time is less than the current time
-            if(curTask.getReadyTime() <= curTime && curTask.getComputedTime() < curTask.getComputationTime())
+            if(curTask.getReadyTime() <= curTime && curTask.getComputedTime() < curTask.getComputationTime() && curTask.getPeriod() < minPeriod)
             {
-
+                highestPriorityTask = curTask;
             }
         }
 
         if(Ps < minPeriod)
         {
-            // Find an aperiodic task to run if available
+            // TODO Find an aperiodic task to run if available
         }
 
-        return null;
+        return highestPriorityTask;
     }
 
     public boolean SchedulabilityTest()
