@@ -181,22 +181,22 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
 
     public void onPeriodicTaskChange(int computationTime, int period, boolean isNew, int listPosition)
     {
-        if (isNew) periodicTasks.add(new PeriodicTask(computationTime, period));
+        if (isNew) periodicTasks.add(new PeriodicTask("", computationTime, period));
         else {
             if (TEST) Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             periodicTasks.remove(listPosition);
-            periodicTasks.add(listPosition, new PeriodicTask(computationTime, period));
+            periodicTasks.add(listPosition, new PeriodicTask("", computationTime, period));
             periodicAdapter.notifyDataSetChanged();
         }
     }
 
     public void onAperiodicTaskChange(int readyTime, int computationTime, int deadline, boolean isNew, int listPosition)
     {
-        if (isNew) aperiodicTasks.add(new AperiodicTask(readyTime, computationTime, deadline));
+        if (isNew) aperiodicTasks.add(new AperiodicTask("", readyTime, computationTime, deadline));
         else {
             if (TEST) Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             aperiodicTasks.remove(listPosition);
-            aperiodicTasks.add(listPosition, new AperiodicTask(readyTime, computationTime, deadline));
+            aperiodicTasks.add(listPosition, new AperiodicTask("", readyTime, computationTime, deadline));
             aperiodicAdapter.notifyDataSetChanged();
         }
     }
