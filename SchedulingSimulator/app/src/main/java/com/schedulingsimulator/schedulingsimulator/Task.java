@@ -22,6 +22,17 @@ public class Task
         this.id = id;
     }
 
+    public Task()
+    {
+        this.readyTime = 0;
+        this.computationTime = 0;
+        this.deadline = 0;
+        this.period = 0;
+        this.computedTime = 0;
+        this.id = "-1";
+    }
+
+
     public int getReadyTime() { return readyTime; }
 
     public int getComputationTime() { return computationTime; }
@@ -65,4 +76,6 @@ public class Task
     public void setPeriod(int newPeriod) { period = newPeriod; }
 
     public void setComputedTime(int newComputedTime) { computedTime = newComputedTime; }
+
+    public void setID(String newID) { id = newID; }
 }
