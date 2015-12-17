@@ -1,5 +1,6 @@
 package com.schedulingsimulator.schedulingsimulator;
 
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -15,7 +16,7 @@ public class AperiodicTask extends Task implements Parcelable {
 
     public AperiodicTask(String id, int readyTime, int compTime, int deadline)
     {
-        super(id);
+        super(id, Color.BLACK); //all aperiodic tasks are colored red
         this.readyTime = readyTime;
         this.computationTime = compTime;
         this.deadline = deadline;

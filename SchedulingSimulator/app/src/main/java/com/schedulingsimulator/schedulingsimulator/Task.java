@@ -1,5 +1,9 @@
 package com.schedulingsimulator.schedulingsimulator;
 
+import android.graphics.Color;
+
+import java.util.Random;
+
 /**
  * Created by Amy on 12/16/2015.
  */
@@ -11,6 +15,18 @@ public class Task
     private int period;
     private int computedTime;
     private String id;
+    private int color;
+
+    public Task(String id, int color)
+    {
+        this.readyTime = 0;
+        this.computationTime = 0;
+        this.deadline = 0;
+        this.period = 0;
+        this.computedTime = 0;
+        this.id = id;
+        this.color = color;
+    }
 
     public Task(String id)
     {
@@ -20,6 +36,9 @@ public class Task
         this.period = 0;
         this.computedTime = 0;
         this.id = id;
+        //generate random color
+        Random ran = new Random();
+        this.color = Color.rgb(ran.nextInt(256), ran.nextInt(256), ran.nextInt(256));
     }
 
     public Task()
@@ -30,6 +49,7 @@ public class Task
         this.period = 0;
         this.computedTime = 0;
         this.id = "-1";
+        this.color = Color.rgb(0, 0, 0);
     }
 
 
@@ -57,6 +77,7 @@ public class Task
         return id;
     }
 
+    public int getColor() { return color; }
 
     public void setReadyTime(int newReadyTime)
     {

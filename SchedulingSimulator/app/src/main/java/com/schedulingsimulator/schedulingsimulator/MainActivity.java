@@ -272,39 +272,27 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         if (TEST) Toast.makeText(this, "Schedulable: " + schedulable, Toast.LENGTH_SHORT).show();
     }
 
-    private boolean schedulabilityTest()
-    {
-        double summation = 0;
-        for (int i = 0; i < periodicTasks.size(); i++)
-        {
-            PeriodicTask current = periodicTasks.get(i);
-            summation += ((double) current.getComputationTime() / (double) current.getPeriod());
-        }
-        double rightSide = periodicTasks.size() * (Math.pow(2, 1.0/periodicTasks.size()) - 1);
-        return summation <= rightSide;
-    }
-
-    private int[][] createPollingServerSchedule(int scheduleLength, int serverComputationTime, int serverPeriod)
-    {
-        if (TEST) Toast.makeText(this, "Schedule Length: " + scheduleLength + " Server comp time: " + serverComputationTime + " Server Period: " + serverPeriod, Toast.LENGTH_SHORT).show();
-        int numTasks = periodicTasks.size() + 1; //num periodic tasks + 1 for server task
-        int[][] pollingSchedule = new int[numTasks][scheduleLength];
-
-
-
-        return pollingSchedule;
+    private boolean schedulabilityTest() {
+//        double summation = 0;
+//        for (int i = 0; i < periodicTasks.size(); i++) {
+//            PeriodicTask current = periodicTasks.get(i);
+//            summation += ((double) current.getComputationTime() / (double) current.getPeriod());
+//        }
+//        double rightSide = periodicTasks.size() * (Math.pow(2, 1.0 / periodicTasks.size()) - 1);
+//        return summation <= rightSide;
+        return true;
     }
 
     private boolean exactAnalysis()
     {
-        ArrayList<PeriodicTask> orderedByPeriod = orderPeriodicByPeriod();
-        if (TEST) Toast.makeText(this, "Ordered By Period: " + orderedByPeriod.toString(), Toast.LENGTH_SHORT).show();
-        for (int i = 0; i < orderedByPeriod.size(); i++)
-        {
-            boolean taskSchedulable = completionTimeTest(i, orderedByPeriod);
-            if (TEST) Toast.makeText(this, "Schedulability of task: " + orderedByPeriod.get(i).toString() + " " + taskSchedulable, Toast.LENGTH_SHORT).show();
-            if (!taskSchedulable) return false;
-        }
+//        ArrayList<PeriodicTask> orderedByPeriod = orderPeriodicByPeriod();
+//        if (TEST) Toast.makeText(this, "Ordered By Period: " + orderedByPeriod.toString(), Toast.LENGTH_SHORT).show();
+//        for (int i = 0; i < orderedByPeriod.size(); i++)
+//        {
+//            boolean taskSchedulable = completionTimeTest(i, orderedByPeriod);
+//            if (TEST) Toast.makeText(this, "Schedulability of task: " + orderedByPeriod.get(i).toString() + " " + taskSchedulable, Toast.LENGTH_SHORT).show();
+//            if (!taskSchedulable) return false;
+//        }
         return true;
     }
 

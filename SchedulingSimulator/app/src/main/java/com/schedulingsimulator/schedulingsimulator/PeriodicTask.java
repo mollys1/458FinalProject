@@ -1,7 +1,10 @@
 package com.schedulingsimulator.schedulingsimulator;
 
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.Random;
 
 /**
  * Created by Molly on 11/23/2015.
@@ -13,10 +16,18 @@ public class PeriodicTask extends Task implements Parcelable {
     private int computationTime;
     private int period;
 
-    public PeriodicTask(String id, int compTime, int period) {
+    public PeriodicTask(String id, int compTime, int period, int red, int green, int blue) {
+        super(id, Color.rgb(red, green, blue));
+        this.computationTime = compTime;
+        this.period = period;
+    }
+
+    public PeriodicTask(String id, int compTime, int period)
+    {
         super(id);
         this.computationTime = compTime;
         this.period = period;
+
     }
 
     public PeriodicTask(Parcel in)

@@ -9,6 +9,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class SchedulesActivity extends AppCompatActivity {
 
     public static final String SCHEDULE_LENGTH_KEY = "scheduleLength";
@@ -20,13 +22,17 @@ public class SchedulesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        int scheduleLength = intent.getIntExtra(SCHEDULE_LENGTH_KEY, -1);
         setContentView(R.layout.activity_schedules);
         TableRow tr = (TableRow) findViewById(R.id.tableRow);
-        for (int i = 0; i < scheduleLength; i++)
+        TestingScheduler testingScheduler = new TestingScheduler();
+        ArrayList<Task> schedule = testingScheduler.GetSchedule();
+        for (int i = 0; i < schedule.size(); i++)
         {
+            Task currentTask = schedule.get(i);
             TextView columnTextView = new TextView(this);
-            columnTextView.setText("Col " + i);
+            columnTextView.setPadding(0, 0, 10, 0);
+            columnTextView.setText(currentTask.getId());
+            columnTextView.setBackgroundColor(currentTask.getColor());
             tr.addView(columnTextView);
         }
     }
