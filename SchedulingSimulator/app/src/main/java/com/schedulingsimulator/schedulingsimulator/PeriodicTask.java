@@ -6,11 +6,15 @@ import android.os.Parcelable;
 /**
  * Created by Molly on 11/23/2015.
  */
-public class PeriodicTask implements Parcelable {
+public class PeriodicTask extends Task implements Parcelable {
+
+    private int readyTime;
+    private int deadline;
     private int computationTime;
     private int period;
 
     public PeriodicTask(int compTime, int period) {
+        super();
         this.computationTime = compTime;
         this.period = period;
     }
@@ -19,26 +23,6 @@ public class PeriodicTask implements Parcelable {
     {
         computationTime = in.readInt();
         period = in.readInt();
-    }
-
-    public int getComputationTime()
-    {
-        return computationTime;
-    }
-
-    public int getPeriod()
-    {
-        return period;
-    }
-
-    public void setPeriod(int newPeriod)
-    {
-        this.period = newPeriod;
-    }
-
-    public void setComputationTime(int newCompTime)
-    {
-        this.computationTime = newCompTime;
     }
 
     @Override
