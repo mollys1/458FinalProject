@@ -6,14 +6,14 @@ import java.util.Iterator;
 /**
  * Created by Amy on 12/16/2015.
  */
-public class PollingServerScheduler implements Scheduler
+public class DeferredServerScheduler implements Scheduler
 {
     private ArrayList<Task> schedule;
     private ArrayList<PeriodicTask> periodicTasks;
     private ArrayList<AperiodicTask> aperiodicTasks;
     private PeriodicTask AperServer;
 
-    public PollingServerScheduler (int serverComputationTime, int serverPeriod, ArrayList<PeriodicTask> ptask, ArrayList<AperiodicTask> atask)
+    public DeferredServerScheduler (int serverComputationTime, int serverPeriod, ArrayList<PeriodicTask> ptask, ArrayList<AperiodicTask> atask)
     {
         schedule = new ArrayList<Task>();
         periodicTasks = ptask;
@@ -69,7 +69,7 @@ public class PollingServerScheduler implements Scheduler
         while(perIter.hasNext())
         {
             curTask = perIter.next();
-            LCM = lcm(curTask.getPeriod(), LCM);
+            LCM = lcm(LCM, curTask.getPeriod());
         }
 
         // Aperiodic Task time
@@ -114,7 +114,7 @@ public class PollingServerScheduler implements Scheduler
 
         if(highestPriorityTask != null && highestPriorityTask.aperiodicServer)
         {
-            // Find an aperiodic task to run if available
+            // TODO Find an aperiodic task to run if available
             ArrayList<AperiodicTask> readyTimeOrdered = orderAperiodicByReadyTime();
             Iterator<AperiodicTask> iter = readyTimeOrdered.iterator();
             AperiodicTask curATask = null;
@@ -128,8 +128,6 @@ public class PollingServerScheduler implements Scheduler
             }
 
             // Aperiodic server gives up its time
-            highestPriorityTask.setReadyTime(highestPriorityTask.getReadyTime() + highestPriorityTask.getPeriod());
-            highestPriorityTask.setComputedTime(0);
             return highestNonAperPriorityTask;
         }
 
@@ -234,7 +232,6 @@ public class PollingServerScheduler implements Scheduler
         }
         return orderedByReadyTime;
     }
-
     private static int gcd(int a, int b)
     {
         while (b > 0)

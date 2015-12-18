@@ -20,7 +20,7 @@ public class SchedulerTest
         atasks.add(new AperiodicTask("A2", 8, 1, 20));
         atasks.add(new AperiodicTask("A3", 13, 2, 20));
 
-        Scheduler sched = new PollingServerScheduler(1, 5, ptasks, atasks);
+        Scheduler sched = new DeferredServerScheduler(1, 5, ptasks, atasks);
         boolean possible = sched.SchedulabilityTest();
 
         if(possible)
