@@ -9,14 +9,13 @@ import java.util.Random;
  */
 public class Task
 {
-<<<<<<< HEAD
-    private int readyTime;
-    private int computationTime;
-    private int deadline;
-    private int period;
-    private int computedTime;
-    private String id;
-    private int color;
+    protected int readyTime;
+    protected int computationTime;
+    protected int deadline;
+    protected int period;
+    protected int computedTime;
+    protected String id;
+    protected int color;
 
     public Task(String id, int color)
     {
@@ -28,14 +27,6 @@ public class Task
         this.id = id;
         this.color = color;
     }
-=======
-    protected int readyTime;
-    protected int computationTime;
-    protected int deadline;
-    protected int period;
-    protected int computedTime;
-    protected String id;
->>>>>>> origin/master
 
     public Task(String id)
     {
