@@ -23,11 +23,7 @@ public class PeriodicTask extends Task implements Parcelable {
         super(id);
         this.computationTime = compTime;
         this.period = period;
-<<<<<<< HEAD
-
-=======
         aperiodicServer = false;
->>>>>>> origin/master
     }
 
     public PeriodicTask(Parcel in)
