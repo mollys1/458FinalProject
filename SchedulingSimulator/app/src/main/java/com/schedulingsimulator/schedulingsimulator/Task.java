@@ -9,14 +9,13 @@ import java.util.Random;
  */
 public class Task
 {
-
     protected int readyTime;
     protected int computationTime;
     protected int deadline;
     protected int period;
     protected int computedTime;
     protected String id;
-    protected  int color;
+    protected int color;
 
     public Task(String id, int color)
     {
