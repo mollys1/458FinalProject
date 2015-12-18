@@ -12,7 +12,7 @@ public class AperiodicTask extends Task implements Parcelable {
 
     public AperiodicTask(String id, int readyTime, int compTime, int deadline)
     {
-        super(id, Color.BLACK); //all aperiodic tasks are colored red
+        super(id, Color.RED); //all aperiodic tasks are colored red
         this.readyTime = readyTime;
         this.computationTime = compTime;
         this.deadline = deadline;
@@ -23,6 +23,8 @@ public class AperiodicTask extends Task implements Parcelable {
         readyTime = in.readInt();
         computationTime = in.readInt();
         deadline = in.readInt();
+        id = in.readString();
+        color = in.readInt();
     }
 
     public int describeContents()
@@ -35,6 +37,8 @@ public class AperiodicTask extends Task implements Parcelable {
         out.writeInt(readyTime);
         out.writeInt(computationTime);
         out.writeInt(deadline);
+        out.writeString(id);
+        out.writeInt(color);
     }
 
     @Override

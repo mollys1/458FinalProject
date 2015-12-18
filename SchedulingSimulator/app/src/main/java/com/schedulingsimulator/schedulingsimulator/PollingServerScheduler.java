@@ -16,7 +16,7 @@ public class PollingServerScheduler implements Scheduler
     public PollingServerScheduler (int serverComputationTime, int serverPeriod, ArrayList<PeriodicTask> ptask, ArrayList<AperiodicTask> atask)
     {
         schedule = new ArrayList<Task>();
-        periodicTasks = ptask;
+        periodicTasks = new ArrayList<>(ptask);
         aperiodicTasks = atask;
         AperServer = new PeriodicTask("S", serverComputationTime, serverPeriod);
         AperServer.aperiodicServer = true;

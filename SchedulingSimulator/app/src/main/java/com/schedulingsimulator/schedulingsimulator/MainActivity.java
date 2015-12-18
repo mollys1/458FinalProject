@@ -148,6 +148,16 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                                                      }
                                                  });
                 aperiodicList.setAdapter(aperiodicAdapter);
+        if (TEST)
+        {
+            periodicTasks.add(new PeriodicTask("P1", 1, 4));
+            periodicTasks.add(new PeriodicTask("P2", 2, 6));
+            aperiodicTasks.add(new AperiodicTask("AP1", 2, 2, 24));
+            aperiodicTasks.add(new AperiodicTask("AP2", 8, 1, 24));
+            aperiodicTasks.add(new AperiodicTask("AP3", 13, 2, 24));
+        }
+
+
     }
 
     @Override
@@ -181,22 +191,22 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
 
     public void onPeriodicTaskChange(int computationTime, int period, boolean isNew, int listPosition)
     {
-        if (isNew) periodicTasks.add(new PeriodicTask("", computationTime, period));
+        if (isNew) periodicTasks.add(new PeriodicTask("P" + listPosition, computationTime, period));
         else {
             if (TEST) Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             periodicTasks.remove(listPosition);
-            periodicTasks.add(listPosition, new PeriodicTask("", computationTime, period));
+            periodicTasks.add(listPosition, new PeriodicTask("P" + listPosition, computationTime, period));
             periodicAdapter.notifyDataSetChanged();
         }
     }
 
     public void onAperiodicTaskChange(int readyTime, int computationTime, int deadline, boolean isNew, int listPosition)
     {
-        if (isNew) aperiodicTasks.add(new AperiodicTask("", readyTime, computationTime, deadline));
+        if (isNew) aperiodicTasks.add(new AperiodicTask("AP" + listPosition, readyTime, computationTime, deadline));
         else {
             if (TEST) Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             aperiodicTasks.remove(listPosition);
-            aperiodicTasks.add(listPosition, new AperiodicTask("", readyTime, computationTime, deadline));
+            aperiodicTasks.add(listPosition, new AperiodicTask("AP" + listPosition, readyTime, computationTime, deadline));
             aperiodicAdapter.notifyDataSetChanged();
         }
     }
@@ -226,117 +236,52 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
 
     public void createSchedule(View view)
     {
-        //check RMS schedulability
-        boolean schedulable = schedulabilityTest();
-        //if schedulability test fails, do exact analysis
-        if (!schedulable) schedulable = exactAnalysis();
-        //if exact analysis fails, show error that task set was not schedulable
-        if (!schedulable)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setMessage(R.string.not_schedulable_message)
-                    .setTitle(R.string.not_schedulable_title)
-                    .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(R.string.schedule_params_message)
+                .setTitle(R.string.schedule_params_title)
+                .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText schedLengthEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.scheduleLength);
+                        EditText computationTimeEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverComputationTime);
+                        EditText periodEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverPeriod);
+                        dialog.dismiss();
+                        //int scheduleLength = Integer.parseInt(schedLengthEditText.getText().toString());
+                        int computationTime = Integer.parseInt(computationTimeEditText.getText().toString());
+                        int period = Integer.parseInt(periodEditText.getText().toString());
+                        DeferredServerScheduler deferredServer = new DeferredServerScheduler(computationTime, period, periodicTasks, aperiodicTasks);
+                        PollingServerScheduler pollingServer = new PollingServerScheduler(computationTime, period, periodicTasks, aperiodicTasks);
+                        //check RMS schedulability
+                        boolean schedulable = deferredServer.SchedulabilityTest();
+                        if (TEST) Toast.makeText(MainActivity.this, "Schedulable: " + schedulable, Toast.LENGTH_SHORT).show();
+                        //if exact analysis fails, show error that task set was not schedulable
+                        if (!schedulable)
+                        {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setMessage(R.string.not_schedulable_message)
+                                    .setTitle(R.string.not_schedulable_title)
+                                    .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .show();
                         }
-                    })
-                    .show();
-        }
-        //if schedulable, ask for schedule length, create schedule arrays, pass to schedules activity
-        else
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setMessage(R.string.schedule_params_message)
-                    .setTitle(R.string.schedule_params_title)
-                    .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            EditText schedLengthEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.scheduleLength);
-                            EditText computationTimeEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverComputationTime);
-                            EditText periodEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverPeriod);
-                            dialog.dismiss();
+                        //if schedulable go to schedules activity
+                        else
+                        {
                             //start schedules activity
                             Intent intent = new Intent(MainActivity.this, SchedulesActivity.class);
-                            int scheduleLength = Integer.parseInt(schedLengthEditText.getText().toString());
-                            int computationTime = Integer.parseInt(computationTimeEditText.getText().toString());
-                            int period = Integer.parseInt(periodEditText.getText().toString());
-                            intent.putExtra(SchedulesActivity.SCHEDULE_LENGTH_KEY, scheduleLength);
+                            intent.putExtra(SchedulesActivity.SERVER_COMPUTATION_TIME_KEY, computationTime);
+                            intent.putExtra(SchedulesActivity.SERVER_PERIOD_KEY, period);
+                            intent.putExtra(SchedulesActivity.APERIODIC_TASKS_KEY, aperiodicTasks);
+                            intent.putExtra(SchedulesActivity.PERIODIC_TASKS_KEY, periodicTasks);
                             startActivity(intent);
                         }
-                    })
-                    .setView(R.layout.dialog_schedule_params)
-                    .show();
-        }
-        if (TEST) Toast.makeText(this, "Schedulable: " + schedulable, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setView(R.layout.dialog_schedule_params)
+                .show();
     }
-
-    private boolean schedulabilityTest() {
-//        double summation = 0;
-//        for (int i = 0; i < periodicTasks.size(); i++) {
-//            PeriodicTask current = periodicTasks.get(i);
-//            summation += ((double) current.getComputationTime() / (double) current.getPeriod());
-//        }
-//        double rightSide = periodicTasks.size() * (Math.pow(2, 1.0 / periodicTasks.size()) - 1);
-//        return summation <= rightSide;
-        return true;
-    }
-
-    private boolean exactAnalysis()
-    {
-//        ArrayList<PeriodicTask> orderedByPeriod = orderPeriodicByPeriod();
-//        if (TEST) Toast.makeText(this, "Ordered By Period: " + orderedByPeriod.toString(), Toast.LENGTH_SHORT).show();
-//        for (int i = 0; i < orderedByPeriod.size(); i++)
-//        {
-//            boolean taskSchedulable = completionTimeTest(i, orderedByPeriod);
-//            if (TEST) Toast.makeText(this, "Schedulability of task: " + orderedByPeriod.get(i).toString() + " " + taskSchedulable, Toast.LENGTH_SHORT).show();
-//            if (!taskSchedulable) return false;
-//        }
-        return true;
-    }
-
-    //perform completion time test on given task, true if task is schedulable
-    private boolean completionTimeTest(int index, ArrayList<PeriodicTask> sortedTasks)
-    {
-        PeriodicTask toCheck = sortedTasks.get(index);
-        int completionTime = 0, previousCompletionTime = 1;
-        while (previousCompletionTime <= toCheck.getPeriod())
-        {
-            for (int i = index; i < sortedTasks.size(); i++)
-            {
-                completionTime += Math.ceil((double) previousCompletionTime / sortedTasks.get(i).getPeriod()) * sortedTasks.get(i).getComputationTime();
-            }
-            if (previousCompletionTime == completionTime) return true;
-            previousCompletionTime = completionTime;
-            completionTime = 0;
-        }
-        return false;
-    }
-
-    private ArrayList<PeriodicTask> orderPeriodicByPeriod()
-    {
-        ArrayList<PeriodicTask> orderedByPeriod = new ArrayList<>(periodicTasks.size());
-        orderedByPeriod.add(periodicTasks.get(0));
-        for (int i = 1; i < periodicTasks.size(); i++)
-        {
-            PeriodicTask toInsert = periodicTasks.get(i);
-            boolean inserted = false;
-            for (int j = 0; j < orderedByPeriod.size() && !inserted; j++)
-            {
-                if (toInsert.getPeriod() >= orderedByPeriod.get(j).getPeriod())
-                {
-                    orderedByPeriod.add(j, toInsert);
-                    inserted = true;
-                }
-                else if (j == orderedByPeriod.size() - 1)
-                {
-                    orderedByPeriod.add(toInsert);
-                    inserted = true;
-                }
-            }
-        }
-        return orderedByPeriod;
-    }
-
 }

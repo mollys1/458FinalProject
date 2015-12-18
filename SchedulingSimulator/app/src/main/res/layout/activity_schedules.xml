@@ -32,8 +32,21 @@
                 android:showDividers="middle"
                 >
 
+
                 <TableRow
-                    android:id="@+id/tableRow"
+                    android:id="@+id/pollingScheduleRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/deferredScheduleRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/timeRow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                 </TableRow>

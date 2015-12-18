@@ -30,6 +30,13 @@ public class PeriodicTask extends Task implements Parcelable {
     {
         computationTime = in.readInt();
         period = in.readInt();
+        id = in.readString();
+        color = in.readInt();
+    }
+
+    public boolean isServerTask()
+    {
+        return aperiodicServer;
     }
 
     @Override
@@ -47,6 +54,8 @@ public class PeriodicTask extends Task implements Parcelable {
     {
         out.writeInt(computationTime);
         out.writeInt(period);
+        out.writeString(id);
+        out.writeInt(color);
     }
 
     public static final Parcelable.Creator<PeriodicTask> CREATOR = new Parcelable.Creator<PeriodicTask>(){

@@ -16,7 +16,7 @@ public class DeferredServerScheduler implements Scheduler
     public DeferredServerScheduler (int serverComputationTime, int serverPeriod, ArrayList<PeriodicTask> ptask, ArrayList<AperiodicTask> atask)
     {
         schedule = new ArrayList<Task>();
-        periodicTasks = ptask;
+        periodicTasks = new ArrayList<>(ptask);
         aperiodicTasks = atask;
         AperServer = new PeriodicTask("S", serverComputationTime, serverPeriod);
         AperServer.aperiodicServer = true;
@@ -147,7 +147,7 @@ public class DeferredServerScheduler implements Scheduler
         for (int i = 0; i < periodicTasks.size(); i++)
         {
             PeriodicTask current = periodicTasks.get(i);
-            summation += ((double) current.getComputationTime() / (double) current.getPeriod());
+            if(!current.isServerTask()) summation += ((double) current.getComputationTime() / (double) current.getPeriod());
         }
 
         double rightSide = periodicTasks.size() * (Math.pow(2, 1.0/periodicTasks.size()) - 1);
