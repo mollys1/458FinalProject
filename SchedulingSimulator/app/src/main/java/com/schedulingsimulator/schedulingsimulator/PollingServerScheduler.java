@@ -17,7 +17,7 @@ public class PollingServerScheduler implements Scheduler
     {
         schedule = new ArrayList<Task>();
         periodicTasks = new ArrayList<>(ptask);
-        aperiodicTasks = atask;
+        aperiodicTasks = new ArrayList<>(atask);
         AperServer = new PeriodicTask("S", serverComputationTime, serverPeriod);
         AperServer.aperiodicServer = true;
         periodicTasks.add(AperServer);
@@ -69,17 +69,17 @@ public class PollingServerScheduler implements Scheduler
         while(perIter.hasNext())
         {
             curTask = perIter.next();
-            LCM = lcm(curTask.getPeriod(), LCM);
+            if (!((PeriodicTask)curTask).isServerTask()) LCM = lcm(LCM, curTask.getPeriod());
         }
 
-        // Aperiodic Task time
+        //Aperiodic Task time
         Iterator<AperiodicTask> aperIter = aperiodicTasks.iterator();
         while(aperIter.hasNext())
         {
             curTask = aperIter.next();
-            if(curTask.getReadyTime() + curTask.getComputationTime() > LCM)
+            if(curTask.getDeadline() > LCM)
             {
-                LCM = curTask.getReadyTime() + curTask.getComputationTime();
+                LCM = curTask.getDeadline();
             }
         }
 

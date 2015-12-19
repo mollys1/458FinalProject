@@ -37,18 +37,25 @@
                     android:id="@+id/pollingScheduleRow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
+
+                    <TextView android:text="Polling Schedule: "/>
+
                 </TableRow>
 
                 <TableRow
                     android:id="@+id/deferredScheduleRow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
+
+                    <TextView android:text="Deferred Schedule: "/>
                 </TableRow>
 
                 <TableRow
                     android:id="@+id/timeRow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
+
+                    <TextView android:text="Time Units" />
                 </TableRow>
 
             </TableLayout>

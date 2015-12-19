@@ -32,12 +32,31 @@ public class SchedulesActivity extends AppCompatActivity {
         TableRow pollingRow = (TableRow) findViewById(R.id.pollingScheduleRow);
         TableRow deferredRow = (TableRow) findViewById(R.id.deferredScheduleRow);
         TableRow timeRow = (TableRow) findViewById(R.id.timeRow);
-        DeferredServerScheduler deferredServerScheduler = new DeferredServerScheduler(serverComputationTime, serverPeriod, periodicTasks, aperiodicTasks);
-        ArrayList<Task> deferredSchedule = deferredServerScheduler.GetSchedule();
-
-        PollingServerScheduler pollingServerScheduler = new PollingServerScheduler(serverComputationTime, serverPeriod, periodicTasks, aperiodicTasks);
+        PollingServerScheduler pollingServerScheduler = new PollingServerScheduler(serverComputationTime, serverPeriod, copyPeriodicTasksList(periodicTasks), copyAperiodicTasksList(aperiodicTasks));
         ArrayList<Task> pollingSchedule = pollingServerScheduler.GetSchedule();
         int padding = 10;
+        for (int i = 0; i < pollingSchedule.size(); i++)
+        {
+
+            //pollingScheduleRow
+            Task currentPollingTask = pollingSchedule.get(i);
+            TextView pollingColumnTextView = new TextView(this);
+            pollingColumnTextView.setPadding(0, 0, padding, 0);
+            if (currentPollingTask != null )
+            {
+                pollingColumnTextView.setText(currentPollingTask.getId());
+                pollingColumnTextView.setBackgroundColor(currentPollingTask.getColor());
+            }
+            else
+            {
+                pollingColumnTextView.setText("");
+                pollingColumnTextView.setBackgroundColor(Color.WHITE);
+            }
+            pollingRow.addView(pollingColumnTextView);
+        }
+
+        DeferredServerScheduler deferredServerScheduler = new DeferredServerScheduler(serverComputationTime, serverPeriod, copyPeriodicTasksList(periodicTasks), copyAperiodicTasksList(aperiodicTasks));
+        ArrayList<Task> deferredSchedule = deferredServerScheduler.GetSchedule();
         for (int i = 0; i < deferredSchedule.size(); i++)
         {
             //deferredScheduleRow
@@ -55,21 +74,6 @@ public class SchedulesActivity extends AppCompatActivity {
                 deferredColumnTextView.setBackgroundColor(Color.WHITE);
             }
             deferredRow.addView(deferredColumnTextView);
-            //pollingScheduleRow
-            Task currentPollingTask = pollingSchedule.get(i);
-            TextView pollingColumnTextView = new TextView(this);
-            pollingColumnTextView.setPadding(0, 0, padding, 0);
-            if (currentPollingTask != null )
-            {
-                pollingColumnTextView.setText(currentPollingTask.getId());
-                pollingColumnTextView.setBackgroundColor(currentPollingTask.getColor());
-            }
-            else
-            {
-                pollingColumnTextView.setText("");
-                pollingColumnTextView.setBackgroundColor(Color.WHITE);
-            }
-            pollingRow.addView(pollingColumnTextView);
 
             //add counter to timerow
             TextView indexTextView = new TextView(this);
@@ -99,5 +103,19 @@ public class SchedulesActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private ArrayList<PeriodicTask> copyPeriodicTasksList(ArrayList<PeriodicTask> periodicTasks)
+    {
+        ArrayList<PeriodicTask> copy = new ArrayList<PeriodicTask>();
+        for (int i = 0; i < periodicTasks.size(); i++) copy.add(periodicTasks.get(i).clone());
+        return copy;
+    }
+
+    private ArrayList<AperiodicTask> copyAperiodicTasksList(ArrayList<AperiodicTask> aperiodicTasks)
+    {
+        ArrayList<AperiodicTask> copy = new ArrayList<AperiodicTask>();
+        for (int i = 0; i < aperiodicTasks.size(); i++) copy.add(aperiodicTasks.get(i).clone());
+        return copy;
     }
 }

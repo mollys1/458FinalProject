@@ -152,9 +152,9 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
         {
             periodicTasks.add(new PeriodicTask("P1", 1, 4));
             periodicTasks.add(new PeriodicTask("P2", 2, 6));
-            aperiodicTasks.add(new AperiodicTask("AP1", 2, 2, 24));
-            aperiodicTasks.add(new AperiodicTask("AP2", 8, 1, 24));
-            aperiodicTasks.add(new AperiodicTask("AP3", 13, 2, 24));
+            aperiodicTasks.add(new AperiodicTask("A1", 2, 5, 25));
+            //aperiodicTasks.add(new AperiodicTask("A2", 10, 2, 11));
+            aperiodicTasks.add(new AperiodicTask("A2", 13, 2, 25));
         }
 
 
@@ -202,11 +202,11 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
 
     public void onAperiodicTaskChange(int readyTime, int computationTime, int deadline, boolean isNew, int listPosition)
     {
-        if (isNew) aperiodicTasks.add(new AperiodicTask("AP" + listPosition, readyTime, computationTime, deadline));
+        if (isNew) aperiodicTasks.add(new AperiodicTask("A" + listPosition, readyTime, computationTime, deadline));
         else {
             if (TEST) Toast.makeText(this, "Position: " + listPosition, Toast.LENGTH_SHORT).show();
             aperiodicTasks.remove(listPosition);
-            aperiodicTasks.add(listPosition, new AperiodicTask("AP" + listPosition, readyTime, computationTime, deadline));
+            aperiodicTasks.add(listPosition, new AperiodicTask("A" + listPosition, readyTime, computationTime, deadline));
             aperiodicAdapter.notifyDataSetChanged();
         }
     }
@@ -242,7 +242,6 @@ public class MainActivity extends FragmentActivity implements PeriodicTaskFragme
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        EditText schedLengthEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.scheduleLength);
                         EditText computationTimeEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverComputationTime);
                         EditText periodEditText = (EditText) ((AlertDialog) dialog).findViewById(R.id.serverPeriod);
                         dialog.dismiss();

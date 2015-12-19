@@ -34,6 +34,16 @@ public class PeriodicTask extends Task implements Parcelable {
         color = in.readInt();
     }
 
+    @Override
+    public PeriodicTask clone()
+    {
+        PeriodicTask clone = new PeriodicTask(this.id, this.computationTime, this.period);
+        clone.readyTime = this.readyTime;
+        clone.deadline = this.deadline;
+        clone.color = this.color;
+        return clone;
+    }
+
     public boolean isServerTask()
     {
         return aperiodicServer;
